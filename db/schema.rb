@@ -17,6 +17,7 @@ ActiveRecord::Schema.define(version: 2020_11_24_203842) do
 
   create_table "newsletters", force: :cascade do |t|
     t.string "title"
+    t.string "uuid"
     t.string "tagline"
     t.text "description"
     t.text "html"
@@ -27,6 +28,7 @@ ActiveRecord::Schema.define(version: 2020_11_24_203842) do
   create_table "stories", force: :cascade do |t|
     t.string "title"
     t.text "html"
+    t.string "uuid"
     t.integer "tag_id"
     t.integer "newsletter_id"
     t.datetime "created_at", precision: 6, null: false

@@ -2,6 +2,7 @@ class CreateNewsletters < ActiveRecord::Migration[6.0]
   def change
     create_table :newsletters do |t|
       t.string :title
+      t.string :uuid
       t.string :tagline
       t.text :description
       t.text :html
