@@ -55,6 +55,24 @@ module Api
           render json: {error: 'Error: Could not create story'}
         end
       end
+
+      def destroy
+        begin
+          @story = Story.find_by(id: params[:id])
+
+          if @story
+            @story.destroy
+            @story.lyra_connection('delete', @story.uuid)
+            render json: @story
+          else 
+            render json: {error: 'Error: Delete unsuccessful'}
+          end
+        rescue => exception
+          render json: {error: 'Error: Delete unsuccessful'}
+        end
+      end
     end
+
+    
   end
 end

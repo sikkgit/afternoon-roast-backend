@@ -22,7 +22,7 @@ class Story < ApplicationRecord
     uri_string = @@base_url + "/stories"
     url = URI(uri_string)
 
-    if http_method == 'patch'
+    if http_method == 'patch' || http_method == 'delete'
       url = URI(uri_string + "/" + uuid)
     end
     
@@ -33,18 +33,26 @@ class Story < ApplicationRecord
       request = Net::HTTP::Post.new(url)
     elsif http_method == 'patch'
       request = Net::HTTP::Patch.new(url)
+    elsif http_method == 'delete'
+      request = Net::HTTP::Delete.new(url)
     end
 
     request["Authorization"] = "Bearer "+ ENV['LYRA_API_KEY']
 
-    form_data = [['html', self.html],['title', self.title]]
-    request.set_form form_data, 'multipart/form-data'
+    if http_method == 'post' || http_method == 'patch'
+      form_data = [['html', self.html],['title', self.title]]
+      request.set_form form_data, 'multipart/form-data'
+    end
+    
     response = https.request(request)
 
-    parsed_response = JSON.parse(response.body)
-    uuid = parsed_response["data"]["id"]
-    self.uuid = uuid
-    self.save
+    if http_method == 'post'
+      parsed_response = JSON.parse(response.body)
+      uuid = parsed_response["data"]["id"]
+      self.uuid = uuid
+      self.save
+    end
+
   end
 
 end
