@@ -18,7 +18,6 @@ ActiveRecord::Schema.define(version: 2020_11_24_203842) do
   create_table "newsletters", force: :cascade do |t|
     t.string "title"
     t.string "uuid"
-    t.string "tagline"
     t.text "description"
     t.text "html"
     t.datetime "created_at", precision: 6, null: false

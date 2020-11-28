@@ -7,6 +7,10 @@ class Story < ApplicationRecord
 
   @@base_url = "https://lyra-api.herokuapp.com/api"
 
+  def formatted_date
+    self.created_at.in_time_zone('Eastern Time (US & Canada)').strftime("%Y-%m-%d")
+  end
+
   def add_sanitized_html(html)
     self.html = ActionController::Base.helpers.sanitize(html)
     self.save

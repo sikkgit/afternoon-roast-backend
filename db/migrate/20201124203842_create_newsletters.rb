@@ -3,7 +3,6 @@ class CreateNewsletters < ActiveRecord::Migration[6.0]
     create_table :newsletters do |t|
       t.string :title
       t.string :uuid
-      t.string :tagline
       t.text :description
       t.text :html
 
