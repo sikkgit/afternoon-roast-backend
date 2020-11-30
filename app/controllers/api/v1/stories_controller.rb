@@ -7,29 +7,29 @@ module Api
       end
 
       def show
-        @story = Story.find_by(id: params[:id])
+        story = Story.find_by(id: params[:id])
 
-        if !@story
+        if !story
           render json: {error: 'Error: Story not found'}
         else
-          render json: @story
+          render json: story
         end
       end
 
       def update
         begin
-          @story = Story.find_by(id: params[:id])
+          story = Story.find_by(id: params[:id])
 
-          if @story
-            @story.update(title: params[:title])
+          if story
+            story.update(title: params[:title])
 
-            sanitize_and_save_html(@story, params[:html])
+            sanitize_and_save_html(story, params[:html])
 
-            find_and_save_tag(@story, params[:tag])
+            find_and_save_tag(story, params[:tag])
 
-            lyra_connection(item: @story, type: 'stories', method: 'patch', uuid: @story.uuid)
+            lyra_connection(item: story, type: 'stories', method: 'patch', uuid: story.uuid)
 
-            render json: @story
+            render json: story
           else
             render json: {error: 'Error: Story update unsuccessful'}
           end
@@ -41,15 +41,15 @@ module Api
 
       def create
         begin
-          @story = Story.create(title: params[:title])
+          story = Story.create(title: params[:title])
 
-          find_and_save_tag(@story, params[:tag])
+          find_and_save_tag(story, params[:tag])
 
-          sanitize_and_save_html(@story, params[:html])
+          sanitize_and_save_html(story, params[:html])
 
-          lyra_connection(item: @story, type: 'stories', method: 'post')
+          lyra_connection(item: story, type: 'stories', method: 'post')
 
-          render json: @story
+          render json: story
         rescue => exception
           render json: {error: 'Error: Could not create story'}
         end
@@ -57,14 +57,14 @@ module Api
 
       def destroy
         begin
-          @story = Story.find_by(id: params[:id])
+          story = Story.find_by(id: params[:id])
 
-          if @story
-            @story.destroy
+          if story
+            story.destroy
 
-            lyra_connection(item: @story, type: 'stories', method: 'delete', uuid: @story.uuid)
+            lyra_connection(item: story, type: 'stories', method: 'delete', uuid: story.uuid)
 
-            render json: @story
+            render json: story
           else 
             render json: {error: 'Error: Delete unsuccessful'}
           end
