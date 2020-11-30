@@ -20,14 +20,13 @@ module Api
         begin
           @newsletter = Newsletter.create(title: params[:title], description: params[:description])
 
-          @newsletter.add_sanitized_html(params[:html])
+          sanitize_and_save_html(@newsletter, params[:html])
 
           @newsletter.add_stories(params[:stories])
 
-          @newsletter.lyra_connection('post')
+          lyra_connection(item: @newsletter, type: 'newsletters', method: 'post')
 
           render json: @newsletter
-
         rescue => exception
           render json: {error: 'Error: Could not create newsletter'}
         end
@@ -38,8 +37,10 @@ module Api
           @newsletter = Newsletter.find_by(id: params[:id])
 
           if @newsletter
+            lyra_connection(item: @newsletter, type: 'newsletters', method: 'delete', uuid: @newsletter.uuid)
+
             @newsletter.destroy
-            @newsletter.lyra_connection('delete', @newsletter.uuid)
+
             render json: @newsletter
           else
             render json: {error: 'Error: Delete unsuccessful'}

@@ -1,7 +1,6 @@
 module Api
   module V1
     class StoriesController < ApplicationController
-
       def index
         stories = Story.all
         render json: stories
@@ -23,13 +22,12 @@ module Api
 
           if @story
             @story.update(title: params[:title])
-            @story.sanitize_and_update_html(params[:html])
 
-            tag = Tag.find_or_create_by(name: params[:tag])
-            @story.update(tag: tag)
-            @story.save
+            sanitize_and_save_html(@story, params[:html])
 
-            @story.lyra_connection('patch', @story.uuid)
+            find_and_save_tag(@story, params[:tag])
+
+            lyra_connection(item: @story, type: 'stories', method: 'patch', uuid: @story.uuid)
 
             render json: @story
           else
@@ -43,14 +41,15 @@ module Api
 
       def create
         begin
-          tag = Tag.find_or_create_by(name: params[:tag])        
-          @story = Story.create(title: params[:title], tag: tag)
+          @story = Story.create(title: params[:title])
 
-          @story.add_sanitized_html(params[:html])
-          @story.lyra_connection('post')
+          find_and_save_tag(@story, params[:tag])
+
+          sanitize_and_save_html(@story, params[:html])
+
+          lyra_connection(item: @story, type: 'stories', method: 'post')
 
           render json: @story
-
         rescue => exception
           render json: {error: 'Error: Could not create story'}
         end
@@ -62,7 +61,9 @@ module Api
 
           if @story
             @story.destroy
-            @story.lyra_connection('delete', @story.uuid)
+
+            lyra_connection(item: @story, type: 'stories', method: 'delete', uuid: @story.uuid)
+
             render json: @story
           else 
             render json: {error: 'Error: Delete unsuccessful'}
@@ -71,8 +72,6 @@ module Api
           render json: {error: 'Error: Delete unsuccessful'}
         end
       end
-    end
-
-    
+    end 
   end
 end
